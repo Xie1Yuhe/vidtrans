@@ -6,6 +6,8 @@ a 2-hour 1080p livestream is a single run.
 > Built while subtitling a 2h24m Japanese game livestream: 2,661 cues, consistent terminology,
 > zero timeline overlaps. Every gotcha we hit is baked into the pipeline.
 
+![UI](docs/screenshot.png)
+
 ```
 video → extract audio → local ASR → smart splitting → chunked parallel translation → subtitles → (optional) burn-in
 ```
