@@ -35,3 +35,7 @@ bin/
 .python/
 .python
 
+
+# 语音识别模型缓存（run.bat 会把 HF_HOME 指到这里）
+.hf/
+

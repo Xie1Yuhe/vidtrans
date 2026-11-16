@@ -22,17 +22,21 @@ if not defined PY for /f "usebackq delims=" %%P in (`py -3 -c "import sys;print(
 rem ---------- 5. common install locations ----------
 if not defined PY for /d %%D in ("%LOCALAPPDATA%\Programs\Python\Python3*") do if not defined PY call :try "%%D\python.exe"
 if not defined PY for /d %%D in ("C:\Python3*") do if not defined PY call :try "%%D\python.exe"
+if not defined PY for /d %%D in ("D:\Python3*") do if not defined PY call :try "%%D\python.exe"
 if not defined PY for /d %%D in ("C:\Program Files\Python3*") do if not defined PY call :try "%%D\python.exe"
 
 if not defined PY goto :no_python
 
 echo   python : %PY%
-echo.
+
+rem ---------- keep the model cache next to the tool ----------
+if not defined HF_HOME set "HF_HOME=%~dp0.hf"
 
 rem ---------- dependencies ----------
 "%PY%" -c "import faster_whisper" >nul 2>&1
 if not errorlevel 1 goto :launch
 
+echo.
 echo   First run: installing dependencies (faster-whisper, numpy) ...
 echo.
 "%PY%" -m pip install -r requirements.txt
