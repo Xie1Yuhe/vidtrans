@@ -97,7 +97,11 @@ class Pipeline:
         # 7) 可选烧录
         if cfg.get("burn") and meta["has_video"]:
             self.progress.stage("burn", "烧录字幕到视频")
-            out_mp4 = os.path.join(self.job_dir, f"{basename}.mp4")
+            # 输出名必须和输入不同：上传的 mp4 本身就叫 xxx.mp4，
+            # 若再输出 xxx.mp4 会撞上输入文件（ffmpeg 会直接报 same as Input）。
+            out_mp4 = os.path.join(self.job_dir, f"{basename}.subtitled.mp4")
+            if os.path.abspath(out_mp4) == os.path.abspath(src_path):
+                out_mp4 = os.path.join(self.job_dir, f"{basename}.subtitled.1.mp4")
             ff.burn(cfg, src_path, paths["ass"], out_mp4, cancel=self.cancel)
             paths["mp4"] = out_mp4
             self.progress.log("烧录完成")

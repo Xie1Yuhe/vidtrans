@@ -22,14 +22,25 @@ def extract_audio(cfg, src, dst_wav, sample_rate=16000):
 
 def burn(cfg, src, ass_path, out_path, on_progress=None, cancel=None,
          codec=None, cq=None):
-    """把 ASS 烧进视频。codec 支持 h264_nvenc / libx264。"""
+    """把 ASS 烧进视频。codec 支持 h264_nvenc / libx264。
+
+    注意：ass 过滤器按「当前工作目录」找文件，所以我们会切到 ass 所在目录，
+    因此 src / out_path / ass_path 必须先转成绝对路径，否则相对路径会失效。
+    """
     ff = ffmpeg_path(cfg)
     if not ff:
         raise ToolError("找不到 ffmpeg")
+    src = os.path.abspath(src)
+    ass_path = os.path.abspath(ass_path)
+    out_path = os.path.abspath(out_path)
+    if not os.path.exists(src):
+        raise ToolError("找不到视频文件：" + src)
+    if not os.path.exists(ass_path):
+        raise ToolError("找不到字幕文件：" + ass_path)
     codec = codec or cfg.get("burn_codec", "h264_nvenc")
     cq = cq or cfg.get("burn_cq", 26)
 
-    workdir = os.path.dirname(os.path.abspath(ass_path))
+    workdir = os.path.dirname(ass_path)
     ass_name = os.path.basename(ass_path)
 
     vf = f"ass={ass_name}"

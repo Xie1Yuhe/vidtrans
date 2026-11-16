@@ -636,7 +636,7 @@
           <label>输出</label>
           <select id="burn">
             <option value="false">只出字幕文件</option>
-            <option value="true">字幕 + 带字幕的视频</option>
+            <option value="true">字幕 + 烤进视频</option>
           </select>
         </div>
       </div>
@@ -700,6 +700,10 @@
   <label class="switch" title="上传完成后自动开始">
     <input type="checkbox" id="autoStart" checked><span class="track"></span>
     <span>上传后自动开始</span>
+  </label>
+  <label class="switch" id="burnWrap" title="把字幕直接烤进画面，额外输出一个带字幕的 mp4（耗时较长）">
+    <input type="checkbox" id="burnSwitch"><span class="track"></span>
+    <span>烤字幕进视频</span>
   </label>
   <div class="grow"></div>
   <span class="hintline" id="actionHint">先选一个视频</span>
@@ -838,6 +842,13 @@ function refreshSummary() {
 }
 function providerReady() {
   return !!((el("api_key").value || "").trim() && (el("base_url").value || "").trim());
+}
+function syncBurn() {
+  var on = el("burn") && el("burn").value === "true";
+  if (el("burnSwitch")) el("burnSwitch").checked = on;
+  if (el("burnWrap")) el("burnWrap").title = on
+    ? "已开启：会额外输出一个带字幕的 mp4（2 小时视频约需 30 分钟）"
+    : "把字幕直接烤进画面，额外输出一个带字幕的 mp4（耗时较长）";
 }
 function setHint(t) { if (el("actionHint")) el("actionHint").textContent = t; }
 
@@ -1013,7 +1024,8 @@ function loadConfig() {
     setv("asr_prompt", c.asr_prompt || "");
     setv("concurrency", c.concurrency || 6);
     setv("chunk_size", c.chunk_size || 120);
-    setv("burn", String(!!c.burn));
+    el("burn").value = String(!!c.burn);
+    syncBurn();
     setv("glossary", c.glossary || "");
     setv("extra_rules", c.extra_rules || "");
     var p = c.provider || {};
@@ -1303,6 +1315,21 @@ function bindUI() {
   el("autoStart").checked = localStorage.getItem("vt_auto") !== "0";
   el("autoStart").addEventListener("change", function () {
     localStorage.setItem("vt_auto", el("autoStart").checked ? "1" : "0");
+  });
+
+  // 「烤字幕进视频」：操作条上的开关与设置里的下拉双向同步
+  syncBurn();
+  el("burnSwitch").addEventListener("change", function () {
+    el("burn").value = this.checked ? "true" : "false";
+    syncBurn();
+    refreshSummary();
+    if (this.checked) {
+      toast("已开启：会额外输出带字幕的 mp4（耗时较长）", "ok");
+    }
+  });
+  el("burn").addEventListener("change", function () {
+    syncBurn();
+    refreshSummary();
   });
 }
 

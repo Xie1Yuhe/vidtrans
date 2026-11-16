@@ -207,6 +207,7 @@ class Handler(BaseHTTPRequestHandler):
             with JOBS_LOCK:
                 items = [{"id": j["id"], "filename": j["filename"],
                           "status": j["status"], "created": j["created"],
+                          "error": j.get("error"),
                           "result": j["result"]} for j in
                          sorted(JOBS.values(), key=lambda x: -x["created"])]
             return self._json(items)

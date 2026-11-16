@@ -106,7 +106,7 @@ def main():
     ok("缩略图生成", thumb_ok)
 
     opts = {"src_lang": "ja", "dst_lang": "zh", "asr_model": "tiny",
-            "concurrency": 2, "chunk_size": 40, "burn": False,
+            "concurrency": 2, "chunk_size": 40, "burn": True,
             "asr_prompt": "廻珠、廻想残滓、共闘キャラクター、虎杖悠仁、伏黒恵"}
     if FFMPEG_DIR:
         opts["ffmpeg_dir"] = FFMPEG_DIR
@@ -144,6 +144,13 @@ def main():
         ok("打包下载 zip", len(z) > 200 and z[:2] == b"PK", len(z))
     except Exception as e:
         ok("打包下载 zip", False, e)
+
+    # 烧录：输出名必须与输入不同（否则 ffmpeg 报 same as Input）
+    try:
+        mp4 = fetch(f"/api/result?job={jid}&name=mp4", timeout=300)
+        ok("烧录输出 mp4", len(mp4) > 100000, len(mp4))
+    except Exception as e:
+        ok("烧录输出 mp4", False, e)
 
     return finish()
 
