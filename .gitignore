@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.venv/
+venv/
+env/
+
+# 运行产物
+.vidtrans/
+jobs/
+*.wav
+*.mp4
+*.mkv
+*.ass
+test/out*/
+test/_ui.js
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+test/*.png

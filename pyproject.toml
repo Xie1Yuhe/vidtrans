@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vidtrans"
+version = "1.0.0"
+description = "Translate subtitles for long foreign-language videos: local ASR + LLM translation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "vidtrans contributors" }]
+keywords = ["subtitle", "translation", "whisper", "asr", "ffmpeg", "video", "srt"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Win32 (MS Windows)",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Multimedia :: Video",
+  "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+  "faster-whisper>=1.0.0",
+  "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+gpu = ["nvidia-cublas-cu12", "nvidia-cudnn-cu12"]
+
+[project.scripts]
+vidtrans = "vidtrans.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/USER/vidtrans"
+Issues = "https://github.com/USER/vidtrans/issues"
+
+[tool.setuptools]
+packages = ["vidtrans"]
+
+[tool.setuptools.package-data]
+vidtrans = ["web/*"]

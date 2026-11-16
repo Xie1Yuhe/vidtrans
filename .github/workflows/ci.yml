@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy
+
+      - name: Byte-compile all modules
+        run: python -m compileall -q vidtrans app.py
+
+      - name: Import check
+        run: python -c "import vidtrans, vidtrans.cli, vidtrans.pipeline, vidtrans.server, vidtrans.translate, vidtrans.subtitle, vidtrans.segment; print('imports ok')"
+
+      - name: Version
+        run: python app.py --version
+
+      - name: Config round-trip
+        run: |
+          python -c "from vidtrans import config as c; d=c.load(); d['src_lang']='en'; c.save(d); e=c.load(); assert e['src_lang']=='en'; print('config ok')"
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Front-end logic test (DOM stub, no browser)
+        run: node test/test_ui.js
