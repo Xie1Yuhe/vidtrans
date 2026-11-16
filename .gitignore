@@ -30,3 +30,8 @@ test/*.png
 
 # 一键安装的 ffmpeg（二进制太大，不进仓库）
 bin/
+
+# 便携版 Python（或指向本机运行时的目录联接），不进仓库
+.python/
+.python
+

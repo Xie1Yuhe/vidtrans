@@ -32,6 +32,18 @@ python app.py run test/sample.mp4 --mock    # 管线（需自备一个短视频�
 - 前端：单文件、原生 JS、无构建步骤（这样 GitHub Pages 也能直接用）
 - 注释写「为什么」而不是「做了什么」
 
+## 两个容易踩的坑
+
+**`run.bat` 必须是 ASCII + CRLF。**
+Windows 的 cmd 只认 CRLF 换行，并按系统码页（中文是 GBK）解析文件；
+用 UTF-8 或 LF 保存会把命令行从中间截断，报一堆「'xxx' 不是内部或外部命令」。
+所以这个文件里**不要写中文**（中文引导交给网页和 README），
+`.gitattributes` 已经锁了 `run.bat text eol=crlf`。
+
+**HTTP 头不能直接放中文文件名。**
+`Content-Disposition` 只支持 latin-1，中文/日文文件名要按 RFC 5987
+编码成 `filename*=UTF-8''<percent-encoded>`，见 `server.py` 的 `_download()`。
+
 ## 想加新能力？
 
 欢迎开 issue 先聊。几个方向：

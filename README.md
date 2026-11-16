@@ -78,6 +78,12 @@
 
 控制台会打印地址，一般是 <http://127.0.0.1:8765/>，浏览器会自动打开。
 
+> **如果没有 Python**，`run.bat` 会直接告诉你，并给四条解决办法：
+> ① 装 python.org 的版本（记得勾 Add to PATH）；
+> ② 关掉微软商店的 python 占位别名；
+> ③ 下载便携版 Python 解压到本目录的 `.python\`（使 `.python\python.exe` 存在）；
+> ④ 设环境变量 `VIDTRANS_PYTHON` 指向任意 `python.exe`。
+
 ### 3. 用起来
 
 1. 拖视频进页面（或点击选择）
@@ -166,6 +172,13 @@ vidtrans run 视频.mp4 --src en --dst zh
 ---
 
 ## 常见问题
+
+**双击 `run.bat` 报一堆「'xxx' 不是内部或外部命令」**
+说明 `run.bat` 被存成了 **UTF-8 + LF 换行**。Windows 的 cmd 只认 **CRLF 换行**，
+而且它按系统码页（中文是 GBK）解析文件，遇到混合编码就会把命令行从中间截断。
+本仓库的 `run.bat` 现在是**纯 ASCII + CRLF**，`.gitattributes` 里也锁了
+`run.bat text eol=crlf`，正常 clone 下来不会出问题。
+如果你自己改过这个文件，请确认保存为 **ANSI/ASCII + CRLF**。
 
 **拖视频进去没反应，浏览器反而自己播放了**
 页面是用 `file://` 双击打开的。用 `run.bat` / `python app.py serve` 启动，
