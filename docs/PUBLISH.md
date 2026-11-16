@@ -54,6 +54,25 @@ git push -u origin main
 
 ## 三、推送后检查（2 分钟）
 
+> **关于 CI 工作流**：GitHub 不允许**没有 `workflow` 权限**的 Personal Access Token
+> 推送 `.github/workflows/` 下的文件，会报
+> `refusing to allow a Personal Access Token to create or update workflow ... without workflow scope`。
+>
+> 两种补法，任选其一：
+>
+> 1. **网页上传（最省事）**：仓库页 → `Add file` → `Create new file` →
+>    路径填 `.github/workflows/ci.yml`，把本地同名文件的内容粘进去，提交。
+> 2. **换 token**：生成 token 时除了 `repo` 再勾上 **`workflow`**，然后
+>    `git push` 即可。
+>
+> 补上之后，把 README 顶部这行徽章加回去（中英两份都要加）：
+>
+> ```markdown
+> [![ci](https://github.com/你的用户名/vidtrans/actions/workflows/ci.yml/badge.svg)](https://github.com/你的用户名/vidtrans/actions/workflows/ci.yml)
+> ```
+>
+> 目前徽章被摘掉了，因为工作流还没推上去时它会显示成破图。
+
 1. **CI 是否绿**：仓库页 → Actions，应该看到 `ci` 工作流跑起来。
    跑的是语法检查 + 导入检查 + 前端 DOM 桩测试，**不需要 GPU / 模型 / API Key**，
    正常 1 分钟内完成。
