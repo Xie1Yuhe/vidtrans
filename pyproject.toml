@@ -32,8 +32,8 @@ gpu = ["nvidia-cublas-cu12", "nvidia-cudnn-cu12"]
 vidtrans = "vidtrans.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/USER/vidtrans"
-Issues = "https://github.com/USER/vidtrans/issues"
+Homepage = "https://github.com/Xie1Yuhe/vidtrans"
+Issues = "https://github.com/Xie1Yuhe/vidtrans/issues"
 
 [tool.setuptools]
 packages = ["vidtrans"]

@@ -5,7 +5,7 @@
 ## 开发环境
 
 ```bash
-git clone https://github.com/USER/vidtrans.git
+git clone https://github.com/Xie1Yuhe/vidtrans.git
 cd vidtrans
 python -m pip install -r requirements.txt
 python app.py serve          # 本地起服务

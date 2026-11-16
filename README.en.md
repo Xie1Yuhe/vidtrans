@@ -1,6 +1,6 @@
 # vidtrans
 
-[![ci](https://github.com/USER/vidtrans/actions/workflows/ci.yml/badge.svg)](https://github.com/USER/vidtrans/actions/workflows/ci.yml)
+[![ci](https://github.com/Xie1Yuhe/vidtrans/actions/workflows/ci.yml/badge.svg)](https://github.com/Xie1Yuhe/vidtrans/actions/workflows/ci.yml)
 ![python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![license](https://img.shields.io/badge/license-MIT-4ade80)
 ![platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280)

@@ -60,4 +60,4 @@
 - 纯音乐 / 无人声段落会被 VAD 跳过，不会有字幕
 - 识别是 ASR，口语、抢话、专有名词仍可能出错，重要内容建议抽检
 
-[1.0.0]: https://github.com/USER/vidtrans/releases/tag/v1.0.0
+[1.0.0]: https://github.com/Xie1Yuhe/vidtrans/releases/tag/v1.0.0
