@@ -27,3 +27,6 @@ Thumbs.db
 *.log
 
 test/*.png
+
+# 一键安装的 ffmpeg（二进制太大，不进仓库）
+bin/
