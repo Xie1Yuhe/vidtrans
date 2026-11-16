@@ -19,6 +19,13 @@ def _app_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def app_bin_dir():
+    """项目自带的 ffmpeg 目录（一键安装会放这里）。"""
+    d = os.path.join(_app_root(), "bin")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
 def _candidate_dirs(cfg_dir=""):
     """ffmpeg 可能待的地方，按优先级。"""
     dirs = []

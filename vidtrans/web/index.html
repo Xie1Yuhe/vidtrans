@@ -6,207 +6,496 @@
 <title>vidtrans · 视频字幕翻译</title>
 <style>
   :root{
-    --bg:#0d0f14; --panel:#151922; --panel2:#1b212c; --line:#252c39;
-    --fg:#e7eaf0; --dim:#8b95a7; --gold:#c9a227; --ok:#3fb950; --err:#f85149;
+    --bg:#0a0c11; --bg2:#0e1116; --card:#12161e; --card2:#171c26;
+    --line:#212836; --line2:#2c3546;
+    --fg:#e8ecf3; --fg2:#b6bfcf; --dim:#7c8798;
+    --gold:#d4af37; --gold2:#f2d06b; --ok:#4ade80; --err:#f87171; --warn:#fbbf24;
+    --r:14px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--fg);
-       font:14px/1.6 "Segoe UI","Microsoft YaHei",system-ui,sans-serif}
-  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px}
-  header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
-  h1{font-size:22px;margin:0;letter-spacing:.5px}
-  .ver{color:var(--dim);font-size:12px}
-  .sub{color:var(--dim);margin:0 0 20px;font-size:13px}
-  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-  .badge{font-size:12px;padding:3px 10px;border-radius:20px;
-         border:1px solid var(--line);background:var(--panel);color:var(--dim)}
-  .badge.ok{color:var(--ok);border-color:#20402a}
-  .badge.err{color:var(--err);border-color:#4a2222}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
-        padding:18px;margin-bottom:16px}
-  .card h2{font-size:14px;margin:0 0 14px;color:var(--gold);font-weight:600;
-           letter-spacing:.6px}
-  #drop{border:2px dashed var(--line);border-radius:12px;padding:38px 20px;
-        text-align:center;cursor:pointer;transition:.15s;background:var(--panel)}
-  #drop:hover,#drop.hot{border-color:var(--gold);background:#1a1e27}
-  #drop .big{font-size:15px;margin-bottom:6px}
-  #drop .hint{color:var(--dim);font-size:12px}
-  .row{display:flex;gap:14px;flex-wrap:wrap}
-  .field{flex:1;min-width:180px}
-  label{display:block;font-size:12px;color:var(--dim);margin-bottom:5px}
-  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);
-        color:var(--fg);border-radius:8px;padding:9px 11px;font:inherit;outline:none}
-  input:focus,select:focus,textarea:focus{border-color:#3d4757}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font:14.5px/1.65 "Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .aurora{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(680px 420px at 12% -8%, rgba(212,175,55,.16), transparent 62%),
+      radial-gradient(760px 460px at 92% 4%, rgba(80,120,220,.14), transparent 66%),
+      radial-gradient(900px 700px at 50% 118%, rgba(120,80,200,.12), transparent 70%);
+  }
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    padding:14px 26px;background:rgba(10,12,17,.82);
+    backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(140deg,var(--gold),#8a6f14);
+    box-shadow:0 4px 14px rgba(212,175,55,.28);
+  }
+  .logo svg{width:17px;height:17px}
+  .brand h1{font-size:17px;margin:0;letter-spacing:.4px;font-weight:650}
+  .ver{color:var(--dim);font-size:11.5px;padding:2px 7px;border:1px solid var(--line);
+       border-radius:20px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;
+    padding:4px 10px;border-radius:20px;border:1px solid var(--line);
+    background:var(--card);color:var(--fg2);white-space:nowrap;
+  }
+  .chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim)}
+  .chip.ok .dot{background:var(--ok);box-shadow:0 0 8px rgba(74,222,128,.7)}
+  .chip.err .dot{background:var(--err);box-shadow:0 0 8px rgba(248,113,113,.7)}
+  .chip.warn .dot{background:var(--warn)}
+  .chip.err{color:#fca5a5;border-color:#42272a}
+
+  main{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:26px 20px 120px}
+
+  .banner{
+    border:1px solid #4a2a2a;background:linear-gradient(180deg,#241417,#1b1114);
+    color:#ffc9c9;border-radius:var(--r);padding:14px 18px;margin-bottom:18px;
+    font-size:13.5px;line-height:1.75;
+  }
+  .banner b{color:#fff}
+
+  .card{
+    background:linear-gradient(180deg,var(--card),var(--bg2));
+    border:1px solid var(--line);border-radius:var(--r);
+    padding:20px 22px;margin-bottom:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 12px 34px -22px rgba(0,0,0,.9);
+  }
+  .card-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .card-head h2{font-size:14px;margin:0;font-weight:600;letter-spacing:.3px}
+  .badge-num{
+    width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+    font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--line2);
+    color:var(--fg2);flex:none
+  }
+  .card.done .badge-num{background:rgba(74,222,128,.14);border-color:#2c5a3c;color:var(--ok)}
+  .card h2 .sub{color:var(--dim);font-weight:400;font-size:12.5px;margin-left:8px}
+
+  .setup-row{
+    display:flex;gap:14px;align-items:flex-start;padding:14px 0;
+    border-top:1px solid var(--line);
+  }
+  .setup-row:first-of-type{border-top:none}
+  .setup-row .ico{
+    width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;
+    background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);color:var(--gold)
+  }
+  .setup-row.ok .ico{background:rgba(74,222,128,.12);border-color:#2c5a3c;color:var(--ok)}
+  .setup-row .body{flex:1;min-width:0}
+  .setup-row .t{font-weight:600;margin-bottom:3px}
+  .setup-row .d{color:var(--dim);font-size:12.5px}
+
+  .dropzone{
+    border:2px dashed var(--line2);border-radius:var(--r);padding:44px 20px;text-align:center;
+    cursor:pointer;transition:.18s;
+    background:radial-gradient(400px 160px at 50% 0%,rgba(212,175,55,.06),transparent);
+  }
+  .dropzone:hover,.dropzone.hot{
+    border-color:var(--gold);
+    background:radial-gradient(400px 200px at 50% 0%,rgba(212,175,55,.13),transparent)
+  }
+  .dropzone .ic{width:44px;height:44px;margin:0 auto 12px;opacity:.9}
+  .dropzone .big{font-size:15.5px;font-weight:600;margin-bottom:6px}
+  .dropzone .hint{color:var(--dim);font-size:12.5px}
+  .dropzone .hint code{background:var(--card2);padding:1px 6px;border-radius:5px;
+                       border:1px solid var(--line);font-size:11.5px}
+
+  .filecard{display:flex;gap:16px;align-items:center}
+  .filecard .thumb{
+    width:150px;height:84px;border-radius:10px;flex:none;overflow:hidden;
+    background:linear-gradient(135deg,#1a2030,#12161e);border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--dim);font-size:11px;
+  }
+  .filecard .meta{flex:1;min-width:0}
+  .filecard .meta b{display:block;font-size:14.5px;margin-bottom:4px;
+                    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .filecard .meta span{color:var(--dim);font-size:12.5px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .field{min-width:0}
+  label{display:block;font-size:12px;color:var(--dim);margin-bottom:6px}
+  input,select,textarea{
+    width:100%;background:var(--card2);border:1px solid var(--line);
+    color:var(--fg);border-radius:9px;padding:10px 12px;font:inherit;outline:none;
+    transition:.15s;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(212,175,55,.13)}
+  input::placeholder,textarea::placeholder{color:#5b6577}
   textarea{resize:vertical;font-family:inherit}
-  .mono{font-family:Consolas,monospace;font-size:12.5px}
-  button{background:var(--panel2);border:1px solid var(--line);color:var(--fg);
-         border-radius:8px;padding:9px 18px;font:inherit;cursor:pointer;transition:.15s}
-  button:hover:not(:disabled){border-color:#465062}
-  button.primary{background:var(--gold);border-color:var(--gold);color:#1a1405;
-                 font-weight:600}
-  button.primary:hover:not(:disabled){filter:brightness(1.1)}
-  button:disabled{opacity:.45;cursor:not-allowed}
-  .actions{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
-  .file-info{font-size:13px;color:var(--dim);margin-top:10px}
-  .file-info b{color:var(--fg);font-weight:500}
-  .stages{display:flex;flex-direction:column;gap:9px}
-  .stage{display:grid;grid-template-columns:104px 1fr 74px;align-items:center;gap:12px}
+  .mono{font-family:Consolas,"Cascadia Mono",monospace;font-size:12.5px}
+  .help{font-size:11.5px;color:var(--dim);margin-top:5px}
+  code{background:var(--card2);padding:1px 6px;border-radius:5px;
+       border:1px solid var(--line);font-size:12px}
+
+  .langpair{display:grid;grid-template-columns:1fr 34px 1fr;gap:10px;align-items:end}
+  .swap{
+    width:34px;height:38px;border-radius:9px;border:1px solid var(--line);
+    background:var(--card2);color:var(--fg2);cursor:pointer;display:grid;place-items:center
+  }
+  .swap:hover{border-color:var(--gold);color:var(--gold)}
+
+  button{
+    background:var(--card2);border:1px solid var(--line);color:var(--fg);
+    border-radius:9px;padding:10px 18px;font:inherit;cursor:pointer;transition:.15s;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  button:hover:not(:disabled){border-color:var(--line2);background:#1c2230}
+  button:disabled{opacity:.42;cursor:not-allowed}
+  button.primary{
+    background:linear-gradient(180deg,var(--gold2),var(--gold));border-color:var(--gold);
+    color:#191203;font-weight:650;box-shadow:0 6px 20px -6px rgba(212,175,55,.55)
+  }
+  button.primary:hover:not(:disabled){filter:brightness(1.06)}
+  button.ghost{background:transparent;border-color:transparent;color:var(--dim);padding:6px 10px}
+  button.ghost:hover{color:var(--fg);background:var(--card2);border-color:var(--line)}
+  button.sm{padding:7px 13px;font-size:13px}
+
+  .summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .pill{
+    font-size:12px;color:var(--fg2);background:var(--card2);border:1px solid var(--line);
+    padding:4px 11px;border-radius:20px
+  }
+  .pill b{color:var(--fg);font-weight:600}
+
+  details>summary{
+    cursor:pointer;color:var(--dim);font-size:13px;list-style:none;display:flex;
+    align-items:center;gap:7px;user-select:none
+  }
+  details>summary::-webkit-details-marker{display:none}
+  details>summary:before{content:"▸";transition:.2s;display:inline-block}
+  details[open]>summary:before{transform:rotate(90deg)}
+  details>summary:hover{color:var(--fg2)}
+
+  .stages{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+  .stage{display:grid;grid-template-columns:20px 92px 1fr 52px;align-items:center;gap:12px}
+  .stage .tick{
+    width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line2);
+    display:grid;place-items:center;font-size:10px;color:transparent
+  }
+  .stage.active .tick{border-color:var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.13)}
+  .stage.done .tick{background:var(--ok);border-color:var(--ok);color:#06210f}
   .stage .name{font-size:12.5px;color:var(--dim)}
   .stage.active .name{color:var(--fg)}
-  .stage.done .name{color:var(--ok)}
-  .bar{height:7px;background:var(--panel2);border-radius:5px;overflow:hidden}
-  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a6f14,var(--gold));
-         transition:width .25s}
-  .stage.done .bar>i{background:var(--ok)}
-  .pct{font-size:12px;color:var(--dim);text-align:right;font-variant-numeric:tabular-nums}
-  #log{height:190px;overflow:auto;background:#0a0c11;border:1px solid var(--line);
-       border-radius:8px;padding:10px 12px;font:12.5px/1.65 Consolas,monospace;
-       color:#9aa4b4;white-space:pre-wrap}
+  .stage.done .name{color:var(--fg2)}
+  .bar{height:6px;background:var(--card2);border-radius:6px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;border-radius:6px;
+         background:linear-gradient(90deg,#8a6f14,var(--gold2));transition:width .3s}
+  .stage.done .bar>i{background:linear-gradient(90deg,#2f8f52,var(--ok))}
+  .stage .pct{font-size:11.5px;color:var(--dim);text-align:right;
+              font-variant-numeric:tabular-nums}
+
+  #log{
+    height:190px;overflow:auto;background:#080a0e;border:1px solid var(--line);
+    border-radius:10px;padding:11px 13px;margin-top:10px;
+    font:12.5px/1.7 Consolas,monospace;color:#94a0b3;white-space:pre-wrap
+  }
   #log .e{color:var(--err)}
   #log .g{color:var(--ok)}
+
+  .stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:16px}
+  .stat .k{font-size:11.5px;color:var(--dim)}
+  .stat .v{font-size:19px;font-weight:650;letter-spacing:.3px}
+  .preview{
+    max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;
+    background:#080a0e;padding:6px 0;margin-bottom:16px
+  }
+  .pl{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:7px 14px;
+      border-bottom:1px solid rgba(255,255,255,.035);font-size:13px}
+  .pl:last-child{border-bottom:none}
+  .pl .t{color:var(--dim);font-size:11.5px;font-variant-numeric:tabular-nums;padding-top:2px}
+  .pl .zh{color:var(--fg)}
+  .pl .ja{color:#6e7a8d;font-size:11.5px;margin-top:1px;
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dl{display:flex;gap:10px;flex-wrap:wrap}
-  a.dlbtn{display:inline-block;padding:9px 18px;border-radius:8px;text-decoration:none;
-          background:var(--gold);color:#1a1405;font-weight:600}
-  a.dlbtn.alt{background:var(--panel2);color:var(--fg);border:1px solid var(--line);font-weight:400}
+  a.dlbtn{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:9px;
+    text-decoration:none;background:linear-gradient(180deg,var(--gold2),var(--gold));
+    color:#191203;font-weight:650;box-shadow:0 6px 20px -8px rgba(212,175,55,.6)
+  }
+  a.dlbtn.alt{background:var(--card2);color:var(--fg);border:1px solid var(--line);
+              font-weight:400;box-shadow:none}
+  a.dlbtn:hover{filter:brightness(1.07)}
+
+  .actionbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:15;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:13px 26px;background:rgba(10,12,17,.9);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line)
+  }
+  .actionbar .grow{flex:1;min-width:120px}
+  .hintline{color:var(--dim);font-size:12.5px}
+  .switch{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;
+          color:var(--fg2);cursor:pointer}
+  .switch input{display:none}
+  .switch .track{
+    width:36px;height:20px;border-radius:20px;background:var(--card2);
+    border:1px solid var(--line2);position:relative;transition:.18s
+  }
+  .switch .track:after{
+    content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:var(--dim);transition:.18s
+  }
+  .switch input:checked + .track{background:rgba(212,175,55,.22);border-color:var(--gold)}
+  .switch input:checked + .track:after{left:18px;background:var(--gold)}
+
+  #toast{
+    position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(12px);
+    z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;
+    pointer-events:none;opacity:0;transition:.25s
+  }
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast{
+    background:#12161e;border:1px solid var(--line2);border-radius:10px;
+    padding:10px 16px;font-size:13px;box-shadow:0 14px 40px -12px #000;
+    display:flex;align-items:center;gap:9px;max-width:min(520px,90vw)
+  }
+  .toast.ok{border-color:#2c5a3c}
+  .toast.err{border-color:#4a2a2a}
+
   .hidden{display:none!important}
-  .tip{font-size:12px;color:var(--dim);margin-top:8px}
-  details summary{cursor:pointer;color:var(--dim);font-size:13px;outline:none}
-  details[open] summary{margin-bottom:12px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  #banner{border:1px solid #4a2222;background:#2a1414;color:#ffb4b0;
-          border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13px;
-          line-height:1.7}
-  #banner b{color:#ffd7d5}
-  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  .muted{color:var(--dim)}
+  @media(max-width:860px){
+    .grid2,.grid3{grid-template-columns:1fr}
+    .langpair{grid-template-columns:1fr}
+    .swap{width:100%;height:34px}
+    main{padding:18px 14px 120px}
+    .topbar{padding:12px 14px}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
+<div class="aurora"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1405" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2.5" y="4.5" width="19" height="15" rx="3"/>
+        <path d="M6.5 15.5h5M14.5 15.5h3M7 9.5h3"/>
+      </svg>
+    </span>
     <h1>vidtrans</h1><span class="ver" id="ver"></span>
-  </header>
-  <p class="sub">长视频字幕翻译 · 抽音频 → 语音识别 → 分块翻译 → 生成字幕 → 可选烧录</p>
-
-  <div id="banner" class="hidden"></div>
-  <div class="badges" id="badges"></div>
-
-  <div class="card">
-    <h2>① 选择视频</h2>
-    <div id="drop">
-      <div class="big">把视频拖到这里（拖到页面任何位置都行），或点击选择</div>
-      <div class="hint">支持 mp4 / mkv / mov / avi / webm 等，几百 MB 到几 GB 都行</div>
-    </div>
-    <input type="file" id="file" class="hidden" accept="video/*,.mkv,.ts,.flv,.wmv">
-    <div class="file-info" id="fileinfo"></div>
   </div>
+  <div class="chips" id="badges"></div>
+</header>
 
-  <div class="card">
-    <h2>② 翻译设置</h2>
-    <div class="grid2">
-      <div class="field">
-        <label>源语言（视频里说的话）</label>
-        <select id="src_lang"></select>
-      </div>
-      <div class="field">
-        <label>目标语言（字幕语言）</label>
-        <select id="dst_lang"></select>
-      </div>
+<main>
+  <div id="banner" class="banner hidden"></div>
+
+  <section id="setup" class="card hidden">
+    <div class="card-head">
+      <h2>开始前还差几步 <span class="sub" id="setupSub"></span></h2>
     </div>
-    <div class="row" style="margin-top:14px">
-      <div class="field">
-        <label>识别模型</label>
-        <select id="asr_model">
-          <option value="large-v3">large-v3（最准，推荐）</option>
-          <option value="large-v2">large-v2</option>
-          <option value="medium">medium（快）</option>
-          <option value="small">small（更快，精度低）</option>
-        </select>
+
+    <div class="setup-row" id="rowFfmpeg">
+      <div class="ico">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
       </div>
-      <div class="field">
-        <label>识别提示词（专有名词，提升准确率）</label>
-        <input id="asr_prompt" placeholder="如：角色名、术语，用顿号分隔">
-      </div>
-    </div>
-    <div class="row" style="margin-top:14px">
-      <div class="field">
-        <label>并发数</label>
-        <input id="concurrency" type="number" min="1" max="16" value="6">
-      </div>
-      <div class="field">
-        <label>每块字幕条数</label>
-        <input id="chunk_size" type="number" min="20" max="300" value="120">
-      </div>
-      <div class="field">
-        <label>烧录</label>
-        <select id="burn">
-          <option value="false">只出字幕文件</option>
-          <option value="true">同时输出带字幕的视频</option>
-        </select>
+      <div class="body">
+        <div class="t">音频工具 ffmpeg</div>
+        <div class="d" id="ffmpegDesc">还没检测到 ffmpeg，它是抽音轨和烧字幕的必需品。</div>
+        <div class="bar" id="ffmpegBar" style="margin:10px 0 8px;display:none"><i></i></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="primary sm" id="btnInstallFf">一键安装 ffmpeg</button>
+          <button class="ghost sm" id="btnManualFf">手动安装</button>
+          <span class="help" id="ffHint"></span>
+        </div>
+        <div class="help hidden" id="ffManual" style="margin-top:10px">
+          从 <a href="https://www.gyan.dev/ffmpeg/builds/" target="_blank"
+                style="color:var(--gold)">gyan.dev</a> 下载
+          <code>ffmpeg-release-essentials.zip</code>，解压后把 <code>ffmpeg.exe</code>
+          和 <code>ffprobe.exe</code> 复制到 <code id="binPath">bin\</code>，然后刷新页面。
+        </div>
       </div>
     </div>
 
-    <details style="margin-top:16px">
-      <summary>术语表（推荐填写，决定译名一致性）</summary>
-      <textarea id="glossary" rows="7" class="mono"
-        placeholder="每行一条，用 → 或 = 分隔，例如：
+    <div class="setup-row" id="rowApi">
+      <div class="ico">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </div>
+      <div class="body">
+        <div class="t">翻译用的 AI 接口</div>
+        <div class="d" id="apiDesc">填一个 API Key 就能开始，推荐 DeepSeek（便宜且快）。</div>
+        <div class="grid3" style="margin-top:12px">
+          <div class="field">
+            <label>服务商</label>
+            <select id="preset"></select>
+          </div>
+          <div class="field">
+            <label>API 地址</label>
+            <input id="base_url" class="mono" placeholder="https://api.deepseek.com/v1">
+          </div>
+          <div class="field">
+            <label>模型</label>
+            <input id="model_name" class="mono" placeholder="deepseek-chat">
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>API Key</label>
+          <input id="api_key" type="password" class="mono" placeholder="sk-...">
+          <div class="help">只存在本机 <code>~/.vidtrans/config.json</code>，不会上传。</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+          <button class="sm" id="btnTestApi">测试连接</button>
+          <span class="help" id="apiTestMsg"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="card1">
+    <div class="card-head">
+      <span class="badge-num" id="n1">1</span><h2>选择视频</h2>
+      <span style="margin-left:auto;font-size:12px;color:var(--dim)" id="c1state"></span>
+    </div>
+
+    <div id="drop" class="dropzone">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v3.5A2.5 2.5 0 0 1 18.5 21h-13A2.5 2.5 0 0 1 3 18.5V15"/>
+        <path d="M12 3v12m0-12l-4.5 4.5M12 3l4.5 4.5"/>
+      </svg>
+      <div class="big">把视频拖到这里</div>
+      <div class="hint">拖到页面任意位置也行 · 或点击选择 · 支持 <code>mp4 / mkv / mov / webm</code></div>
+    </div>
+    <input type="file" id="file" class="hidden" accept="video/*,.mkv,.ts,.flv,.wmv,.m4v">
+
+    <div id="filecard" class="filecard hidden">
+      <div class="thumb" id="thumbBox">预览</div>
+      <div class="meta">
+        <b id="fname"></b>
+        <span id="fmeta"></span>
+      </div>
+      <button class="ghost sm" id="btnReset">换一个</button>
+    </div>
+    <div class="bar" id="uploadBar" style="display:none;margin-top:14px"><i></i></div>
+  </section>
+
+  <section class="card" id="card2">
+    <div class="card-head">
+      <span class="badge-num" id="n2">2</span><h2>翻译设置</h2>
+      <button class="ghost sm" id="btnToggle" style="margin-left:auto">展开</button>
+    </div>
+    <div id="settingsBody" class="hidden">
+      <div class="langpair">
+        <div class="field">
+          <label>视频里的语言</label>
+          <select id="src_lang"></select>
+        </div>
+        <button class="swap" id="btnSwap" title="交换语言">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round"><path d="M7 4v13m0 0l-3-3m3 3l3-3M17 20V7m0 0l3 3m-3-3l-3 3"/></svg>
+        </button>
+        <div class="field">
+          <label>字幕语言</label>
+          <select id="dst_lang"></select>
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:14px">
+        <div class="field">
+          <label>识别模型</label>
+          <select id="asr_model">
+            <option value="large-v3">large-v3 · 最准（推荐）</option>
+            <option value="medium">medium · 快一倍</option>
+            <option value="small">small · 更快、精度低</option>
+            <option value="tiny">tiny · 只用来试跑</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>并发数 <span class="muted">（被限流就调小）</span></label>
+          <input id="concurrency" type="number" min="1" max="16" value="6">
+        </div>
+        <div class="field">
+          <label>输出</label>
+          <select id="burn">
+            <option value="false">只出字幕文件</option>
+            <option value="true">字幕 + 带字幕的视频</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:14px">
+        <label>识别提示词 <span class="muted">（写上专有名词，识别更准）</span></label>
+        <input id="asr_prompt" placeholder="例如：廻珠、廻想残滓、共闘キャラクター、虎杖悠仁、伏黒恵">
+      </div>
+
+      <details style="margin-top:16px">
+        <summary>术语表（决定译名一致性，强烈建议填）</summary>
+        <textarea id="glossary" rows="7" class="mono" style="margin-top:10px"
+          placeholder="每行一条，用 → 或 = 分隔，例如：
 廻珠 → 回珠
 廻想残滓 → 回想残滓
 ゾーン → ZONE（不是「领域」）"></textarea>
+      </details>
+      <details style="margin-top:12px">
+        <summary>额外翻译要求</summary>
+        <textarea id="extra_rules" rows="4" style="margin-top:10px"
+          placeholder="例如：口语化、像中文直播口播；数字用阿拉伯数字；保留「」括起卡名"></textarea>
+      </details>
+      <details style="margin-top:12px">
+        <summary>每块字幕条数</summary>
+        <div class="field" style="margin-top:10px;max-width:220px">
+          <input id="chunk_size" type="number" min="20" max="300" value="120">
+          <div class="help">太大容易撞到模型输出上限，一般 100~150。</div>
+        </div>
+      </details>
+    </div>
+    <div class="summary" id="summary"></div>
+  </section>
+
+  <section class="card" id="card3">
+    <div class="card-head">
+      <span class="badge-num" id="n3">3</span><h2>开始翻译</h2>
+      <span style="margin-left:auto;font-size:12px;color:var(--dim)" id="eta"></span>
+    </div>
+    <div class="stages" id="stages"></div>
+    <details>
+      <summary>运行日志</summary>
+      <div id="log"></div>
     </details>
-    <details style="margin-top:10px">
-      <summary>额外翻译要求</summary>
-      <textarea id="extra_rules" rows="4"
-        placeholder="例如：口语化，像中文直播口播；数字用阿拉伯数字；保留「」括起卡名"></textarea>
-    </details>
-  </div>
+  </section>
 
-  <div class="card">
-    <h2>③ 翻译接口</h2>
-    <div class="grid2">
-      <div class="field">
-        <label>API 地址（OpenAI 兼容）</label>
-        <input id="base_url" class="mono" placeholder="https://api.deepseek.com/v1">
-      </div>
-      <div class="field">
-        <label>模型名</label>
-        <input id="model_name" class="mono" placeholder="deepseek-chat">
-      </div>
+  <section class="card hidden" id="resultcard">
+    <div class="card-head">
+      <span class="badge-num" style="background:rgba(74,222,128,.14);border-color:#2c5a3c;color:#4ade80">✓</span>
+      <h2>完成</h2>
+      <span style="margin-left:auto;font-size:12px;color:var(--dim)" id="restip"></span>
     </div>
-    <div class="field" style="margin-top:14px">
-      <label>API Key（只存在本机 ~/.vidtrans/config.json）</label>
-      <input id="api_key" type="password" class="mono" placeholder="sk-...">
-    </div>
-    <div class="actions" style="margin-top:14px">
-      <button id="savecfg">保存设置</button>
-      <span class="tip" id="cfgtip"></span>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>④ 开始</h2>
-    <div class="actions">
-      <button id="start" class="primary" disabled>开始翻译</button>
-      <button id="cancel" disabled>取消</button>
-      <span class="tip" id="runtip"></span>
-    </div>
-    <div class="stages" id="stages" style="margin-top:18px"></div>
-  </div>
-
-  <div class="card hidden" id="resultcard">
-    <h2>⑤ 结果</h2>
+    <div class="stats" id="stats"></div>
+    <div class="preview" id="preview"></div>
     <div class="dl" id="downloads"></div>
-    <div class="tip" id="restip"></div>
-  </div>
+  </section>
+</main>
 
-  <div class="card">
-    <h2>日志</h2>
-    <div id="log"></div>
-  </div>
+<div class="actionbar">
+  <label class="switch" title="上传完成后自动开始">
+    <input type="checkbox" id="autoStart" checked><span class="track"></span>
+    <span>上传后自动开始</span>
+  </label>
+  <div class="grow"></div>
+  <span class="hintline" id="actionHint">先选一个视频</span>
+  <button id="cancel" disabled>取消</button>
+  <button id="start" class="primary" disabled>开始翻译</button>
+  <button id="savecfg" class="ghost sm" title="保存当前设置">保存设置</button>
 </div>
+
+<div id="toast"></div>
 
 <script>
 "use strict";
-/* ---------- 0. 最优先：阻止浏览器「打开拖进来的文件」 ---------- */
 (function () {
   ["dragenter", "dragover", "dragleave", "drop"].forEach(function (t) {
     window.addEventListener(t, function (e) { e.preventDefault(); }, false);
@@ -218,72 +507,94 @@ var LANG_FALLBACK = {
   ru: "俄语", fr: "法语", de: "德语", es: "西班牙语", pt: "葡萄牙语",
   it: "意大利语", th: "泰语", vi: "越南语"
 };
+var PRESETS = [
+  { v: "deepseek", n: "DeepSeek（推荐，便宜）", url: "https://api.deepseek.com/v1", model: "deepseek-chat" },
+  { v: "openai", n: "OpenAI", url: "https://api.openai.com/v1", model: "gpt-4o-mini" },
+  { v: "silicon", n: "硅基流动 SiliconFlow", url: "https://api.siliconflow.cn/v1", model: "Qwen/Qwen2.5-72B-Instruct" },
+  { v: "moonshot", n: "月之暗面 Kimi", url: "https://api.moonshot.cn/v1", model: "moonshot-v1-32k" },
+  { v: "ollama", n: "本地 Ollama（离线免费）", url: "http://127.0.0.1:11434/v1", model: "qwen2.5:14b" },
+  { v: "custom", n: "自定义 / 其他兼容接口", url: "", model: "" }
+];
 var STAGES = [
   ["probe", "读取信息"], ["audio", "提取音轨"], ["asr", "语音识别"],
   ["split", "切分字幕"], ["translate", "翻译"], ["subtitle", "生成字幕"],
-  ["burn", "烧录"]
+  ["burn", "烧录视频"]
 ];
-var JOB = null, ES = null, ENV = null, FILE = null;
+var JOB = null, ES = null, ENV = null, RUNNING = false;
 
-function $(s) { return document.querySelector(s); }
+function el(id) { return document.getElementById(id); }
 function esc(s) {
-  return String(s == null ? "" : s).replace(/[&<>]/g, function (c) {
-    return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c];
+  return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
   });
 }
 function human(n) {
+  if (n == null) return "";
   if (n < 1024) return n + " B";
   if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
   if (n < 1073741824) return (n / 1048576).toFixed(1) + " MB";
   return (n / 1073741824).toFixed(2) + " GB";
 }
+function fmtDur(s) {
+  s = Math.round(s || 0);
+  var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+  if (h) return h + " 小时 " + m + " 分";
+  if (m) return m + " 分 " + x + " 秒";
+  return x + " 秒";
+}
 function log(msg, cls) {
-  var el = $("#log");
-  if (!el) return;
+  var box = el("log");
+  if (!box) return;
   var d = document.createElement("div");
   if (cls) d.className = cls;
   d.textContent = msg;
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+function toast(msg, kind) {
+  var box = el("toast"), t = document.createElement("div");
+  t.className = "toast " + (kind || "");
+  t.textContent = msg;
+  box.innerHTML = "";
+  box.appendChild(t);
+  box.classList.add("on");
+  setTimeout(function () { box.classList.remove("on"); }, 3600);
 }
 function banner(html) {
-  var b = $("#banner");
-  if (!b) return;
-  b.innerHTML = html;
-  b.classList.remove("hidden");
-}
-function setVal(id, v) {
-  var el = document.getElementById(id);
-  if (el) el.value = v;
+  var b = el("banner"); if (!b) return;
+  b.innerHTML = html; b.classList.remove("hidden");
 }
 
-/* ---------- 1. 立即构建 UI（不依赖网络） ---------- */
 function buildStages() {
-  $("#stages").innerHTML = STAGES.map(function (s) {
+  el("stages").innerHTML = STAGES.map(function (s) {
     return '<div class="stage" data-k="' + s[0] + '">' +
-           '<div class="name">' + s[1] + '</div>' +
+           '<div class="tick">✓</div><div class="name">' + s[1] + '</div>' +
            '<div class="bar"><i></i></div><div class="pct"></div></div>';
   }).join("");
 }
-function fillLangs(langs) {
-  var map = (langs && Object.keys(langs).length) ? langs : LANG_FALLBACK;
+function fillLangs(map) {
+  map = (map && Object.keys(map).length) ? map : LANG_FALLBACK;
   var opts = Object.keys(map).map(function (k) {
-    return '<option value="' + esc(k) + '">' + esc(map[k]) + " " + esc(k) + "</option>";
+    return '<option value="' + esc(k) + '">' + esc(map[k]) + "</option>";
   }).join("");
   ["src_lang", "dst_lang"].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) { el.innerHTML = opts; }
+    var e = el(id); if (e) e.innerHTML = opts;
   });
-  setVal("src_lang", "ja");
-  setVal("dst_lang", "zh");
+  if (el("src_lang")) el("src_lang").value = "ja";
+  if (el("dst_lang")) el("dst_lang").value = "zh";
+}
+function fillPresets() {
+  el("preset").innerHTML = PRESETS.map(function (p) {
+    return '<option value="' + p.v + '">' + esc(p.n) + "</option>";
+  }).join("");
 }
 function setStage(k, frac, cls) {
-  var el = document.querySelector('.stage[data-k="' + k + '"]');
-  if (!el) return;
-  if (cls) el.classList.add(cls);
+  var e = document.querySelector('.stage[data-k="' + k + '"]');
+  if (!e) return;
+  if (cls) e.classList.add(cls);
   if (frac != null) {
-    el.querySelector("i").style.width = (frac * 100).toFixed(1) + "%";
-    el.querySelector(".pct").textContent = (frac * 100).toFixed(0) + "%";
+    e.querySelector("i").style.width = (frac * 100).toFixed(1) + "%";
+    e.querySelector(".pct").textContent = (frac * 100).toFixed(0) + "%";
   }
 }
 function resetStages() {
@@ -293,32 +604,58 @@ function resetStages() {
     e.querySelector(".pct").textContent = "";
   });
 }
+function refreshSummary() {
+  if (!el("summary") || !el("src_lang") || !el("src_lang").options.length) return;
+  var a = el("src_lang").options[el("src_lang").selectedIndex].text;
+  var b = el("dst_lang").options[el("dst_lang").selectedIndex].text;
+  var gl = (el("glossary").value || "").trim();
+  var pills = [
+    esc(a) + " → " + esc(b),
+    "识别 " + esc(el("asr_model").value),
+    "并发 " + esc(el("concurrency").value),
+    gl ? "术语表 " + gl.split("\n").filter(function (x) { return x.trim(); }).length + " 条" : "无术语表",
+    el("burn").value === "true" ? "会烧录视频" : "只出字幕"
+  ];
+  el("summary").innerHTML = pills.map(function (p) {
+    return '<span class="pill">' + p + "</span>";
+  }).join("");
+}
+function providerReady() {
+  return !!((el("api_key").value || "").trim() && (el("base_url").value || "").trim());
+}
+function setHint(t) { if (el("actionHint")) el("actionHint").textContent = t; }
 
-/* ---------- 2. 文件选择 / 拖拽（最早绑定） ---------- */
-function bindFilePicking() {
-  var drop = $("#drop"), input = $("#file");
+function bindPicking() {
+  var drop = el("drop"), input = el("file");
   if (drop && input) {
     drop.addEventListener("click", function () { input.click(); });
     input.addEventListener("change", function () {
       if (input.files && input.files[0]) pickFile(input.files[0]);
     });
   }
+  if (el("btnReset")) {
+    el("btnReset").addEventListener("click", function (e) {
+      e.stopPropagation();
+      JOB = null;
+      el("filecard").classList.add("hidden");
+      el("drop").classList.remove("hidden");
+      el("c1state").textContent = "";
+      el("card1").classList.remove("done");
+      el("start").disabled = true;
+      setHint("先选一个视频");
+    });
+  }
   ["dragenter", "dragover"].forEach(function (t) {
-    window.addEventListener(t, function () {
-      if (drop) drop.classList.add("hot");
-    }, false);
+    window.addEventListener(t, function () { if (drop) drop.classList.add("hot"); }, false);
   });
   ["dragleave", "dragend"].forEach(function (t) {
-    window.addEventListener(t, function () {
-      if (drop) drop.classList.remove("hot");
-    }, false);
+    window.addEventListener(t, function () { if (drop) drop.classList.remove("hot"); }, false);
   });
   window.addEventListener("drop", function (e) {
     if (drop) drop.classList.remove("hot");
-    var dt = e.dataTransfer;
-    if (!dt) return;
-    var f = (dt.files && dt.files[0]);
-    if (!f && dt.items && dt.items.length) {
+    var dt = e.dataTransfer; if (!dt) return;
+    var f = dt.files && dt.files[0];
+    if (!f && dt.items) {
       for (var i = 0; i < dt.items.length; i++) {
         if (dt.items[i].kind === "file") { f = dt.items[i].getAsFile(); break; }
       }
@@ -328,150 +665,227 @@ function bindFilePicking() {
 }
 
 function pickFile(file) {
-  if (!file) return;
-  FILE = file;
-  $("#fileinfo").innerHTML = "<b>" + esc(file.name) + "</b> · " +
-    human(file.size) + " · 准备上传…";
+  if (RUNNING) { toast("正在跑任务，等它结束再换", "err"); return; }
+  JOB = null;
+  el("drop").classList.add("hidden");
+  el("filecard").classList.remove("hidden");
+  el("thumbBox").textContent = "读取中…";
+  el("fname").textContent = file.name;
+  el("fmeta").textContent = human(file.size) + " · 上传中…";
+  el("c1state").textContent = "上传中";
+  el("start").disabled = true;
+  setHint("正在上传…");
   doUpload(file);
 }
 
 function doUpload(file) {
-  var startBtn = $("#start");
-  if (startBtn) startBtn.disabled = true;
   log("开始上传：" + file.name);
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "/api/upload", true);
   xhr.setRequestHeader("X-Filename", encodeURIComponent(file.name));
   xhr.upload.onprogress = function (e) {
-    if (e.lengthComputable) {
-      $("#fileinfo").innerHTML = "<b>" + esc(file.name) + "</b> · " +
-        human(e.loaded) + " / " + human(e.total) + " 上传中…";
-    }
+    if (!e.lengthComputable) return;
+    var bar = el("uploadBar");
+    bar.style.display = "block";
+    bar.querySelector("i").style.width = (e.loaded / e.total * 100).toFixed(1) + "%";
+    el("fmeta").textContent = human(e.loaded) + " / " + human(e.total) +
+      " · 上传中 " + (e.loaded / e.total * 100).toFixed(0) + "%";
   };
   xhr.onload = function () {
-    var j;
-    try { j = JSON.parse(xhr.responseText); }
-    catch (err) {
-      log("上传失败：返回不是 JSON（服务没启动？）", "e"); return;
+    var j; try { j = JSON.parse(xhr.responseText); } catch (err) {
+      toast("上传失败：连不上本地服务", "err"); setHint("上传失败"); return;
     }
-    if (!j.ok) { log("上传失败：" + (j.error || "未知错误"), "e"); return; }
+    if (!j.ok) { toast("上传失败：" + (j.error || ""), "err"); setHint("上传失败"); return; }
     JOB = j.job;
-    $("#fileinfo").innerHTML = "<b>" + esc(j.filename) + "</b> · " +
-      human(j.size) + " · 已就绪";
-    if (startBtn) startBtn.disabled = false;
-    log("上传完成，可以开始翻译");
+    el("uploadBar").style.display = "none";
+    el("fmeta").textContent = human(j.size) + " · 就绪";
+    el("c1state").textContent = "已就绪";
+    el("card1").classList.add("done");
+    log("上传完成");
+    setTimeout(loadThumb, 1200);
+    el("start").disabled = false;
+    var ready = providerReady();
+    setHint(ready ? "准备好了，点右下角开始" : "记得先在设置里填 API Key");
+    if (el("autoStart").checked && ready) setTimeout(startJob, 400);
   };
   xhr.onerror = function () {
-    log("上传失败：连不上本地服务。请确认是用 run.bat 启动、并通过 http://127.0.0.1:8765/ 打开本页", "e");
+    toast("上传失败：连不上本地服务", "err");
+    log("请确认是通过 run.bat 启动，并用控制台给的地址打开", "e");
+    setHint("上传失败");
   };
   xhr.send(file);
 }
 
-/* ---------- 3. 与后端通信 ---------- */
-function apiGet(path) {
-  return fetch(path, { cache: "no-store" }).then(function (r) {
+function loadThumb() {
+  if (!JOB) return;
+  var box = el("thumbBox");
+  var img = new Image();
+  img.onload = function () {
+    box.innerHTML = "";
+    img.style.width = "100%"; img.style.height = "100%";
+    img.style.objectFit = "cover";
+    box.appendChild(img);
+  };
+  img.onerror = function () { box.textContent = "无预览"; };
+  img.src = "/api/thumb?job=" + encodeURIComponent(JOB) + "&t=" + Date.now();
+}
+
+function apiGet(p) {
+  return fetch(p, { cache: "no-store" }).then(function (r) {
     if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
   });
 }
-function apiPost(path, obj) {
-  return fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+function apiPost(p, obj) {
+  return fetch(p, {
+    method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify(obj || {})
   }).then(function (r) { return r.json(); });
+}
+
+function chip(ok, label, extra, force) {
+  var cls = force || (ok ? "ok" : "err");
+  return '<span class="chip ' + cls + '"><span class="dot"></span>' + esc(label) +
+    (extra ? " · " + esc(extra) : "") + "</span>";
+}
+function renderChips(env) {
+  env = env || {};
+  var out = [];
+  out.push(chip(!!env.ffmpeg_ok, "ffmpeg", env.ffmpeg_ok ? "" : "未安装"));
+  out.push(chip(!!env.faster_whisper, "识别引擎", env.faster_whisper ? "" : "缺失"));
+  out.push(chip(!!env.gpu, env.gpu ? "GPU 加速" : "CPU 模式", "", env.gpu ? "ok" : "warn"));
+  out.push(chip(providerReady(), "翻译接口", providerReady() ? "" : "未配置"));
+  el("badges").innerHTML = out.join("");
+}
+
+function renderSetup(env) {
+  var needFf = !env.ffmpeg_ok;
+  var needApi = !providerReady();
+  el("rowFfmpeg").className = "setup-row" + (needFf ? "" : " ok");
+  el("rowApi").className = "setup-row" + (needApi ? "" : " ok");
+  if (!needFf) {
+    el("ffmpegDesc").textContent = "已就绪：" + (env.ffmpeg || "");
+    el("btnInstallFf").classList.add("hidden");
+    el("btnManualFf").classList.add("hidden");
+  } else {
+    el("btnInstallFf").classList.remove("hidden");
+    el("btnManualFf").classList.remove("hidden");
+    if (el("binPath")) el("binPath").textContent = (env.bin_dir || "bin") + "\\";
+  }
+  if (!needApi) el("apiDesc").textContent = "已配置：" + (env.model || "就绪");
+  var done = (needFf ? 0 : 1) + (needApi ? 0 : 1);
+  el("setupSub").textContent = done + "/2 已完成";
+  el("setup").classList.toggle("hidden", !needFf && !needApi);
 }
 
 function loadEnv() {
   return apiGet("/api/env").then(function (env) {
     ENV = env;
-    $("#ver").textContent = "v" + env.version;
-    var b = [];
-    b.push(env.ffmpeg_ok
-      ? '<span class="badge ok">ffmpeg 就绪</span>'
-      : '<span class="badge err">找不到 ffmpeg</span>');
-    b.push(env.faster_whisper
-      ? '<span class="badge ok">识别引擎就绪</span>'
-      : '<span class="badge err">缺少 faster-whisper</span>');
-    b.push(env.gpu
-      ? '<span class="badge ok">GPU 可用</span>'
-      : '<span class="badge">CPU 模式</span>');
-    if (env.cuda_libs_missing && env.cuda_libs_missing.length) {
-      b.push('<span class="badge err">缺 CUDA 库：' + esc(env.cuda_libs_missing.join(", ")) + "</span>");
-    }
-    $("#badges").innerHTML = b.join("");
-    if (!env.ffmpeg_ok) {
-      log("找不到 ffmpeg：放到本目录 bin\\ 下，或设置环境变量 VIDTRANS_FFMPEG 指向含 ffmpeg.exe 的目录，然后重启", "e");
-    }
+    el("ver").textContent = "v" + env.version;
     fillLangs(env.langs);
+    renderSetup(env);
+    renderChips(env);
   });
 }
 
 function loadConfig() {
   return apiGet("/api/config").then(function (c) {
-    setVal("src_lang", c.src_lang || "ja");
-    setVal("dst_lang", c.dst_lang || "zh");
-    setVal("asr_model", c.asr_model || "large-v3");
-    setVal("asr_prompt", c.asr_prompt || "");
-    setVal("concurrency", c.concurrency || 6);
-    setVal("chunk_size", c.chunk_size || 120);
-    setVal("burn", String(!!c.burn));
-    setVal("glossary", c.glossary || "");
-    setVal("extra_rules", c.extra_rules || "");
+    var setv = function (id, v) { if (el(id) && v != null) el(id).value = v; };
+    setv("src_lang", c.src_lang || "ja");
+    setv("dst_lang", c.dst_lang || "zh");
+    setv("asr_model", c.asr_model || "large-v3");
+    setv("asr_prompt", c.asr_prompt || "");
+    setv("concurrency", c.concurrency || 6);
+    setv("chunk_size", c.chunk_size || 120);
+    setv("burn", String(!!c.burn));
+    setv("glossary", c.glossary || "");
+    setv("extra_rules", c.extra_rules || "");
     var p = c.provider || {};
-    setVal("base_url", p.base_url || "");
-    setVal("model_name", p.model || "");
-    setVal("api_key", p.api_key || "");
+    setv("base_url", p.base_url || "");
+    setv("model_name", p.model || "");
+    setv("api_key", p.api_key || "");
+    autoPreset();
+    refreshSummary();
+    renderSetup(ENV || { ffmpeg_ok: true });
+    renderChips(ENV || {});
+    if (ENV && !ENV.ffmpeg_ok) setHint("先安装 ffmpeg");
+    else if (JOB) setHint(providerReady() ? "准备好了，点右下角开始" : "填个 API Key 就能开始");
   });
+}
+
+function autoPreset() {
+  var u = (el("base_url").value || "").trim();
+  var hit = "custom";
+  for (var i = 0; i < PRESETS.length; i++) {
+    var p = PRESETS[i];
+    if (p.url && u && u.indexOf(p.url.replace("/v1", "")) >= 0) { hit = p.v; break; }
+  }
+  el("preset").value = hit;
 }
 
 function collectOptions() {
   return {
-    src_lang: $("#src_lang").value,
-    dst_lang: $("#dst_lang").value,
-    asr_model: $("#asr_model").value,
-    asr_prompt: $("#asr_prompt").value,
-    concurrency: +$("#concurrency").value || 6,
-    chunk_size: +$("#chunk_size").value || 120,
-    burn: $("#burn").value === "true",
-    glossary: $("#glossary").value,
-    extra_rules: $("#extra_rules").value,
+    src_lang: el("src_lang").value,
+    dst_lang: el("dst_lang").value,
+    asr_model: el("asr_model").value,
+    asr_prompt: el("asr_prompt").value,
+    concurrency: +el("concurrency").value || 6,
+    chunk_size: +el("chunk_size").value || 120,
+    burn: el("burn").value === "true",
+    glossary: el("glossary").value,
+    extra_rules: el("extra_rules").value,
     provider: {
-      base_url: $("#base_url").value.trim(),
-      model: $("#model_name").value.trim(),
-      api_key: $("#api_key").value.trim()
+      base_url: (el("base_url").value || "").trim(),
+      model: (el("model_name").value || "").trim(),
+      api_key: (el("api_key").value || "").trim()
     }
   };
 }
 
-function saveConfig() {
-  var body = collectOptions();
-  apiPost("/api/config", body).then(function (r) {
-    $("#cfgtip").textContent = r.ok ? "已保存" : "保存失败";
-    setTimeout(function () { $("#cfgtip").textContent = ""; }, 2500);
-  }).catch(function () { $("#cfgtip").textContent = "保存失败（服务未连接）"; });
+function saveConfig(silent) {
+  return apiPost("/api/config", collectOptions()).then(function (r) {
+    if (!silent) toast(r.ok ? "设置已保存" : "保存失败", r.ok ? "ok" : "err");
+    refreshSummary();
+  }).catch(function () {
+    if (!silent) toast("保存失败：服务未连接", "err");
+  });
 }
 
-/* ---------- 4. 运行与进度 ---------- */
+function stopRunUI() {
+  RUNNING = false;
+  el("start").disabled = !JOB;
+  el("start").textContent = "开始翻译";
+  el("cancel").disabled = true;
+}
+
 function startJob() {
-  if (!JOB) { log("还没有上传视频", "e"); return; }
+  if (!JOB) { toast("先选一个视频", "err"); return; }
+  if (!providerReady()) {
+    toast("还没填 API Key", "err");
+    openSettings();
+    el("setup").classList.remove("hidden");
+    el("api_key").focus();
+    return;
+  }
+  saveConfig(true);
   resetStages();
-  $("#resultcard").classList.add("hidden");
-  $("#start").disabled = true;
-  $("#cancel").disabled = false;
-  saveConfig();
+  el("resultcard").classList.add("hidden");
+  RUNNING = true;
+  el("start").disabled = true;
+  el("start").textContent = "运行中…";
+  el("cancel").disabled = false;
+  setHint("正在运行…");
   apiPost("/api/start", { job: JOB, options: collectOptions() }).then(function (j) {
     if (!j.ok) {
-      log("启动失败：" + j.error, "e");
-      $("#start").disabled = false;
-      $("#cancel").disabled = true;
+      toast(j.error || "启动失败", "err");
+      if (j.hint) log(j.hint, "e");
+      stopRunUI();
       return;
     }
     listen();
   }).catch(function (e) {
-    log("启动失败：" + e.message, "e");
-    $("#start").disabled = false;
-    $("#cancel").disabled = true;
+    toast("启动失败：" + e.message, "err");
+    stopRunUI();
   });
 }
 
@@ -484,65 +898,217 @@ function listen() {
       var idx = STAGES.findIndex(function (s) { return s[0] === ev.stage; });
       STAGES.forEach(function (s, i) { if (i < idx) setStage(s[0], 1, "done"); });
       setStage(ev.stage, null, "active");
+      if (ev.msg) setHint(ev.msg);
     } else if (ev.type === "progress") {
       setStage(ev.stage, ev.frac);
+      if (ev.msg) setHint(ev.msg);
     } else if (ev.type === "log") {
-      log(String(ev.msg || ""), /失败|错误|取消/.test(String(ev.msg)) ? "e" : "");
+      log(String(ev.msg || ""), /失败|错误|取消|缺/.test(String(ev.msg)) ? "e" : "");
+    } else if (ev.type === "error") {
+      log("出错：" + ev.msg, "e");
+      if (ev.hint) banner("<b>" + esc(ev.hint) + "</b><br><span class='muted'>" + esc(ev.msg) + "</span>");
+      toast(ev.hint || "运行失败", "err");
+      stopRunUI();
+      ES.close();
     } else if (ev.type === "done") {
       STAGES.forEach(function (s) { setStage(s[0], 1, "done"); });
       showResult(ev.result);
-      $("#start").disabled = false;
-      $("#cancel").disabled = true;
-      ES.close();
-    } else if (ev.type === "error") {
-      log("出错：" + ev.msg, "e");
-      $("#start").disabled = false;
-      $("#cancel").disabled = true;
+      stopRunUI();
       ES.close();
     }
   };
   ES.onerror = function () { log("进度连接中断", "e"); };
 }
 
+function stat(k, v) {
+  return '<div class="stat"><div class="k">' + esc(k) +
+         '</div><div class="v">' + esc(v) + "</div></div>";
+}
+
 function showResult(res) {
   var f = res.files || {};
+  el("stats").innerHTML =
+    stat("字幕条数", res.cues) + stat("视频时长", fmtDur(res.duration)) +
+    stat("总耗时", fmtDur(res.elapsed)) +
+    stat("输出文件", Object.keys(f).filter(function (k) { return k !== "src"; }).length + " 个");
   function mk(name, text, alt) {
     if (!f[name]) return "";
     return '<a class="dlbtn ' + (alt ? "alt" : "") + '" href="/api/result?job=' +
       encodeURIComponent(JOB) + "&name=" + name + '">' + text + "</a>";
   }
-  $("#downloads").innerHTML =
-    mk("srt", "下载中文字幕 .srt") + mk("bilingual", "下载双语 .srt", 1) +
-    mk("ass", "下载 .ass（带样式）", 1) + mk("mp4", "下载带字幕视频 .mp4", 1);
-  $("#restip").textContent = "共 " + res.cues + " 条字幕 · 视频时长 " +
-    Math.round(res.duration / 60) + " 分钟 · 耗时 " + Math.round(res.elapsed) + " 秒";
-  $("#resultcard").classList.remove("hidden");
-  log("完成：" + res.cues + " 条字幕，用时 " + Math.round(res.elapsed) + " 秒", "g");
+  el("downloads").innerHTML = mk("srt", "下载字幕 .srt") + mk("zip", "打包下载 zip", 1) +
+    mk("bilingual", "双语 .srt", 1) + mk("ass", "带样式 .ass", 1) +
+    mk("mp4", "带字幕视频", 1);
+  el("restip").textContent = "花了 " + fmtDur(res.elapsed);
+  el("resultcard").classList.remove("hidden");
+  try { el("resultcard").scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
+  toast("完成！可以下载了", "ok");
+  setHint("已完成");
+  loadPreview();
 }
 
-/* ---------- 5. 启动 ---------- */
+function loadPreview() {
+  if (!JOB) return;
+  apiGet("/api/preview?job=" + encodeURIComponent(JOB) + "&n=40").then(function (r) {
+    if (!r.ok || !r.lines || !r.lines.length) {
+      el("preview").innerHTML = '<div class="pl"><div class="t"></div>' +
+        '<div class="zh muted">（没有预览数据）</div></div>';
+      return;
+    }
+    el("preview").innerHTML = r.lines.map(function (l) {
+      var m = Math.floor(l.start / 60);
+      var s = String(Math.floor(l.start % 60)).padStart(2, "0");
+      return '<div class="pl"><div class="t">' + m + ":" + s + "</div><div>" +
+        '<div class="zh">' + esc(l.text) + "</div>" +
+        (l.src ? '<div class="ja">' + esc(l.src) + "</div>" : "") + "</div></div>";
+    }).join("");
+  }).catch(function () {});
+}
+
+function openSettings() {
+  el("settingsBody").classList.remove("hidden");
+  el("btnToggle").textContent = "收起";
+}
+
+function testApi() {
+  var msg = el("apiTestMsg");
+  msg.textContent = "测试中…";
+  msg.style.color = "var(--dim)";
+  saveConfig(true);
+  apiPost("/api/test-provider", { provider: collectOptions().provider }).then(function (r) {
+    if (r.ok) {
+      msg.textContent = "连接正常（" + r.ms + "ms，模型 " + (r.model || "?") + "）";
+      msg.style.color = "var(--ok)";
+      toast("API 连接正常", "ok");
+    } else {
+      msg.textContent = r.hint || r.error || "连接失败";
+      msg.style.color = "var(--err)";
+      toast(r.hint || "连接失败", "err");
+    }
+    renderChips(ENV || {});
+  }).catch(function (e) {
+    msg.textContent = "测试失败：" + e.message;
+    msg.style.color = "var(--err)";
+  });
+}
+
+function installFfmpeg() {
+  el("ffmpegBar").style.display = "block";
+  el("btnInstallFf").disabled = true;
+  el("ffHint").textContent = "开始下载…";
+  apiPost("/api/setup/ffmpeg", {}).then(function (r) {
+    if (!r.ok) {
+      toast(r.error || "启动安装失败", "err");
+      el("btnInstallFf").disabled = false;
+      return;
+    }
+    if (r.already) { toast("ffmpeg 已经可用", "ok"); reloadEnv(); return; }
+    pollSetup();
+  }).catch(function (e) {
+    toast("启动安装失败：" + e.message, "err");
+    el("btnInstallFf").disabled = false;
+  });
+}
+
+function pollSetup() {
+  apiGet("/api/setup/ffmpeg/status").then(function (s) {
+    el("ffmpegBar").querySelector("i").style.width = ((s.frac || 0) * 100).toFixed(1) + "%";
+    el("ffHint").textContent = s.msg || "";
+    if (s.error) {
+      el("btnInstallFf").disabled = false;
+      toast("ffmpeg 安装失败", "err");
+      return;
+    }
+    if (s.done) {
+      toast("ffmpeg 安装完成", "ok");
+      el("btnInstallFf").disabled = false;
+      setTimeout(reloadEnv, 600);
+      return;
+    }
+    setTimeout(pollSetup, 900);
+  }).catch(function () { setTimeout(pollSetup, 1500); });
+}
+
+function reloadEnv() {
+  return loadEnv().then(function () {
+    var ok = ENV && ENV.ffmpeg_ok;
+    setHint(ok ? "ffmpeg 就绪了，可以开始" : "ffmpeg 还没就绪");
+    if (ok) el("start").disabled = !JOB;
+    var bar = el("ffmpegBar");
+    if (ok) bar.style.display = "none";
+  }).catch(function () {});
+}
+
+function bindUI() {
+  el("btnToggle").addEventListener("click", function () {
+    var body = el("settingsBody");
+    body.classList.toggle("hidden");
+    el("btnToggle").textContent = body.classList.contains("hidden") ? "展开" : "收起";
+  });
+  el("start").addEventListener("click", startJob);
+  el("savecfg").addEventListener("click", function () { saveConfig(false); });
+  el("cancel").addEventListener("click", function () {
+    if (JOB) fetch("/api/cancel?job=" + encodeURIComponent(JOB), { method: "POST" });
+    stopRunUI();
+    toast("已取消");
+  });
+  el("btnSwap").addEventListener("click", function () {
+    var a = el("src_lang").value;
+    el("src_lang").value = el("dst_lang").value;
+    el("dst_lang").value = a;
+    refreshSummary();
+  });
+  ["src_lang", "dst_lang", "asr_model", "concurrency", "burn", "glossary"]
+    .forEach(function (id) {
+      var e = el(id);
+      if (e) { e.addEventListener("change", refreshSummary); e.addEventListener("input", refreshSummary); }
+    });
+  el("preset").addEventListener("change", function () {
+    var v = el("preset").value;
+    for (var i = 0; i < PRESETS.length; i++) {
+      if (PRESETS[i].v === v && PRESETS[i].url) {
+        el("base_url").value = PRESETS[i].url;
+        el("model_name").value = PRESETS[i].model;
+      }
+    }
+    renderSetup(ENV || { ffmpeg_ok: true });
+    renderChips(ENV || {});
+  });
+  el("api_key").addEventListener("input", function () {
+    el("rowApi").className = "setup-row" + (providerReady() ? " ok" : "");
+    renderChips(ENV || {});
+    if (JOB) setHint(providerReady() ? "准备好了，点右下角开始" : "填个 API Key 就能开始");
+  });
+  el("btnTestApi").addEventListener("click", testApi);
+  el("btnInstallFf").addEventListener("click", installFfmpeg);
+  el("btnManualFf").addEventListener("click", function () {
+    el("ffManual").classList.toggle("hidden");
+  });
+  el("autoStart").checked = localStorage.getItem("vt_auto") !== "0";
+  el("autoStart").addEventListener("change", function () {
+    localStorage.setItem("vt_auto", el("autoStart").checked ? "1" : "0");
+  });
+}
+
 function boot() {
   buildStages();
-  fillLangs(LANG_FALLBACK);      // 先用内置语言表，保证下拉可用
-  bindFilePicking();             // 先绑定拖拽/选择，再谈联网
-
-  $("#savecfg").addEventListener("click", saveConfig);
-  $("#start").addEventListener("click", startJob);
-  $("#cancel").addEventListener("click", function () {
-    if (JOB) fetch("/api/cancel?job=" + encodeURIComponent(JOB), { method: "POST" });
-  });
+  fillLangs(LANG_FALLBACK);
+  fillPresets();
+  bindPicking();
+  bindUI();
+  refreshSummary();
+  setHint("先选一个视频");
 
   if (location.protocol === "file:") {
     banner("<b>这个页面不能直接双击打开。</b><br>" +
-      "请先运行 <b>run.bat</b>（或 <b>python app.py</b>），" +
-      "然后在浏览器访问 <b>http://127.0.0.1:8765/</b>。");
-    log("当前是 file:// 协议，无法连接后端服务", "e");
+      "请先运行 <b>run.bat</b>（Windows）或 <b>python app.py serve</b>，" +
+      "再用浏览器打开控制台显示的地址（默认 <b>http://127.0.0.1:8765/</b>）。");
+    log("当前是 file:// 协议，连不上后端", "e");
     return;
   }
 
   loadEnv().then(loadConfig).catch(function (e) {
-    banner("<b>连不上本地后端。</b><br>" +
-      "请确认 vidtrans 正在运行（命令行窗口没关），" +
+    banner("<b>连不上本地后端。</b><br>请确认 vidtrans 还在运行（命令行窗口没关），" +
       "并访问 <b>http://127.0.0.1:8765/</b>。<br>错误：" + esc(e.message));
     log("初始化失败：" + e.message, "e");
   });

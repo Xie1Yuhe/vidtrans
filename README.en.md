@@ -16,14 +16,31 @@ video → extract audio → local ASR → smart splitting → chunked parallel t
 
 ## Features
 
+- **Foolproof setup** — one-click ffmpeg installer, an API "test connection" button,
+  and "auto-start after upload": drop a file and it just runs
 - **Built for long videos** — 2h+ in one run (~3.5× realtime ASR on GPU)
 - **Local ASR** — faster-whisper + CUDA, no per-minute billing; falls back to CPU automatically
-- **Glossary** — `廻珠 → 回珠` style mapping injected into the translation prompt, so names stay consistent
-- **Strict id alignment** — one line in, one line out, filled back by id; the model can't scramble your timeline
-- **Auto re-ask** — if a chunk comes back with missing ids, only the missing ones are requested again
-- **Outputs** — SRT / bilingual SRT / styled ASS / burned-in MP4
+- **Glossary** — `廻珠 → 回珠` style mapping injected into the translation prompt
+- **Strict id alignment** — the model can't scramble your timeline
+- **Auto re-ask** — missing ids are requested again in a second, smaller call
+- **Preview before download** — first 40 cues are shown in the UI
+- **Outputs** — SRT / bilingual SRT / styled ASS / zip bundle / burned-in MP4
+- **Human-readable errors** — 401 / 429 / missing ffmpeg / no audio track, all explained
 - **Zero third-party web deps** — stdlib HTTP server; install is just `faster-whisper`
-- **Web UI** — drop a video → pick languages → watch progress → download subtitles
+
+---
+
+## 30-second start
+
+1. Double-click **`run.bat`** (Windows) or `./run.sh`
+2. If the page says ffmpeg is missing, click **"一键安装 ffmpeg"** — it downloads and unpacks it for you
+3. Pick a provider, paste your API key, click **"测试连接"** to verify
+
+Then: **drop the video → wait → download the subtitles**.
+"Upload then auto-start" is on by default, so dropping a file is the only action needed.
+
+> ⚠️ **Don't double-click `vidtrans/web/index.html`.** That's `file://` — the page can't reach
+> the backend and dropping a file just plays it. Start it with `run.bat` / `python app.py serve`.
 
 ---
 
